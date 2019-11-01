@@ -308,34 +308,41 @@ class FindMyService {
                         }
                         else {
                             let featureCnt = 0;
+                            let showLayers = [];
+                            if (this.layers) {
+                                showLayers = this.layers.split(',');
+                            }
                             let layers = [...[]];
                             map.layers.forEach((layer) => {
-                                layer.queryFeatures({ geometry: selection.result.feature.geometry, outFields: ['*'] }).then(featureSet => {
-                                    layers = [...layers, { title: layer.title, features: featureSet.features, id: layer.id }];
-                                    featureCnt += featureSet.features.length;
-                                    if (layers.length === map.layers.length) {
-                                        layers.sort((a, b) => {
-                                            if (a.title < b.title) {
-                                                return -1;
-                                            }
-                                            if (a.title > b.title) {
-                                                return 0;
-                                            }
-                                        });
-                                        maps = [...maps, { title: map.portalItem.title, featureCnt: featureCnt, layers: layers }];
-                                    }
-                                    if (maps.length === this.webmaps.length) {
-                                        maps.sort((a, b) => {
-                                            if (a.title < b.title) {
-                                                return -1;
-                                            }
-                                            if (a.title > b.title) {
-                                                return 0;
-                                            }
-                                        });
-                                        this.maps = [...maps];
-                                    }
-                                });
+                                if (showLayers.length === 0 || showLayers.includes(layer.title)) {
+                                    layer.queryFeatures({ geometry: selection.result.feature.geometry, outFields: ['*'] }).then(featureSet => {
+                                        layers = [...layers, { title: layer.title, features: featureSet.features, id: layer.id }];
+                                        featureCnt += featureSet.features.length;
+                                        if (layers.length === map.layers.length || showLayers.length === layers.length) {
+                                            layers.sort((a, b) => {
+                                                if (a.title < b.title) {
+                                                    return -1;
+                                                }
+                                                if (a.title > b.title) {
+                                                    return 0;
+                                                }
+                                            });
+                                            debugger;
+                                            maps = [...maps, { title: map.portalItem.title, featureCnt: featureCnt, layers: layers }];
+                                        }
+                                        if (maps.length === this.webmaps.length) {
+                                            maps.sort((a, b) => {
+                                                if (a.title < b.title) {
+                                                    return -1;
+                                                }
+                                                if (a.title > b.title) {
+                                                    return 0;
+                                                }
+                                            });
+                                            this.maps = [...maps];
+                                        }
+                                    });
+                                }
                             });
                         }
                     });
@@ -411,7 +418,7 @@ class FindMyService {
                 : h("div", null);
         }))));
     }
-    static get style() { return ""; }
+    static get style() { return "STYLE_TEXT_PLACEHOLDER:find-my-service"; }
 }
 
 export { FindMyService as find_my_service };

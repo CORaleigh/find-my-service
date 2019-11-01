@@ -1,5 +1,6 @@
 export declare class FindMyService {
     categories: string;
+    layers: string;
     webmaps: any[];
     maps: any[];
     features: any[];

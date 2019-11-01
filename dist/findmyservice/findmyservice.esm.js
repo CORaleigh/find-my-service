@@ -2,5 +2,5 @@ import { a as patchBrowser, b as globals, c as bootstrapLazy } from './findmyser
 
 patchBrowser().then(resourcesUrl => {
   globals();
-  return bootstrapLazy([["find-my-service",[[0,"find-my-service",{"categories":[1],"webmaps":[32],"maps":[32]}]]]], { resourcesUrl });
+  return bootstrapLazy([["find-my-service",[[0,"find-my-service",{"categories":[1],"layers":[1],"webmaps":[32],"maps":[32]}]]]], { resourcesUrl });
 });

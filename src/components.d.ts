@@ -11,6 +11,7 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 export namespace Components {
   interface FindMyService {
     'categories': string;
+    'layers': string;
   }
 }
 
@@ -30,6 +31,7 @@ declare global {
 declare namespace LocalJSX {
   interface FindMyService extends JSXBase.HTMLAttributes<HTMLFindMyServiceElement> {
     'categories'?: string;
+    'layers'?: string;
   }
 
   interface IntrinsicElements {
