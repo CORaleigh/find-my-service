@@ -1,4 +1,4 @@
-import { e as registerInstance, f as h } from './findmyservice-825d74a2.js';
+import { e as registerInstance, f as h } from './findmyservice-a4aa38f7.js';
 
 /* Copyright (c) 2017 Environmental Systems Research Institute, Inc.
  * Apache-2.0 */
@@ -273,8 +273,10 @@ const esriLoader = {
 class FindMyService {
     constructor(hostRef) {
         registerInstance(this, hostRef);
+        this.council = false;
         this.webmaps = [];
         this.maps = [];
+        this.councilInfo = [];
         this.features = [];
     }
     initializeMap() {
@@ -287,6 +289,7 @@ class FindMyService {
                         displayField: "ADDRESS",
                         name: "Search by address",
                         placeholder: "Search by address",
+                        filter: { where: "FEATURETYPE <> 'Subaddress'" },
                         outFields: ['ADDRESS'],
                         maxResults: 1,
                         maxSuggestions: 6,
@@ -298,6 +301,7 @@ class FindMyService {
             this.search.on('select-result', (selection) => {
                 this.maps = [...[]];
                 let maps = [...[]];
+                this.councilInfo = [...[]];
                 new FeatureLayer({ url: "https://maps.raleighnc.gov/arcgis/rest/services/Planning/Jurisdictions/MapServer/0" }).queryFeatureCount({
                     geometry: selection.result.feature.geometry, outFields: ['*'],
                     where: "LONG_NAME = 'RALEIGH'"
@@ -318,6 +322,14 @@ class FindMyService {
                                     layer.queryFeatures({ geometry: selection.result.feature.geometry, outFields: ['*'] }).then(featureSet => {
                                         layers = [...layers, { title: layer.title, features: featureSet.features, id: layer.id }];
                                         featureCnt += featureSet.features.length;
+                                        if (this.council && layer.title.includes('City Council') && featureSet.features.length > 0) {
+                                            console.log(featureSet.features[0]);
+                                            featureSet.features[0].useDefaultPopupTemplate = false;
+                                            featureSet.features[0].layer.popupTemplate.content[0].text = '<div style="padding:30px"><img alt="" src="https://www.raleighnc.gov/content/PubAffairs/Images/Council/District{COUNCIL_DIST}.jpg" style="padding-right:1em;max-height:200px;"/>';
+                                            featureSet.features[0].layer.popupTemplate.content[0].text += "<h5>{COUNCIL_PERSON}</h5><span>Raleigh City Council</span><div>District {COUNCIL_DIST}</div><div><a href='https://www.raleighnc.gov/government/content/PubAffairs/Contacts/Council/District{COUNCIL_DIST}.html'><span>Website </span></a></div></div>";
+                                            featureSet.features[0].layer.popupTemplate.title = "";
+                                            this.councilInfo.push(featureSet.features[0]);
+                                        }
                                         if (layers.length === map.layers.length || showLayers.length === layers.length) {
                                             layers.sort((a, b) => {
                                                 if (a.title < b.title) {
@@ -327,7 +339,6 @@ class FindMyService {
                                                     return 0;
                                                 }
                                             });
-                                            debugger;
                                             maps = [...maps, { title: map.portalItem.title, featureCnt: featureCnt, layers: layers }];
                                         }
                                         if (maps.length === this.webmaps.length) {
@@ -398,27 +409,41 @@ class FindMyService {
         if (this.search) {
             this.search.destroy();
         }
-        document.getElementById('searchDiv').innerHTML = '';
+        if (document.getElementById('searchDiv')) {
+            document.getElementById('searchDiv').innerHTML = '';
+        }
         this.maps = [...[]];
     }
     loadFeatureWidget(id, feature) {
         loadModules(['esri/widgets/Feature']).then(([Feature]) => {
-            let widget = new Feature({ container: id });
-            widget.graphic = feature;
+            setTimeout(() => {
+                let widget = new Feature({ container: id });
+                widget.graphic = feature;
+            }, 200);
         });
     }
+    disconnectedCallback() {
+        document.getElementById('councilDiv').innerHTML = '';
+    }
     render() {
-        return (h("div", null, h("div", { id: 'searchDiv' }), h("div", null, this.maps.map((webmap) => {
-            return webmap.featureCnt > 0 ? h("div", null, h("h3", null, webmap.title), h("div", null, webmap.layers.map((layer) => {
-                return layer.features.length > 0 ? h("div", null, h("div", null, layer.features.map((feature, i) => {
-                    return h("div", null, h("div", { id: layer.id + '_' + i }, this.loadFeatureWidget(layer.id + '_' + i, feature)), h("br", null));
-                })))
+        return (h("div", null, h("div", { id: 'searchDiv' }), h("div", { class: "o-layout-sidebar-after o-layout-sidebar-after--tight" }, this.councilInfo.map((info) => {
+            return this.council ?
+                h("div", { id: "councilDiv", class: "o-layout-sidebar-after__secondary" }, this.loadFeatureWidget("councilDiv", info))
+                : h("div", null);
+        }), h("ol", { class: "o-layout-grid o-layout-grid--4 o-layout-sidebar-after__primary" }, this.maps.map((webmap) => {
+            return webmap.featureCnt > 0 ? h("li", { class: "o-layout-grid__item" }, h("div", null, h("h3", null, webmap.title), webmap.layers.map((layer) => {
+                return layer.features.length > 0 ? h("div", null, layer.features.map((feature, i) => {
+                    return this.council && layer.title.includes('City Council') ?
+                        h("div", null)
+                        :
+                            h("div", { id: layer.id + '_' + i }, this.loadFeatureWidget(layer.id + '_' + i, feature), h("br", null));
+                }))
                     : h("div", null);
             })))
                 : h("div", null);
-        }))));
+        })))));
     }
-    static get style() { return "STYLE_TEXT_PLACEHOLDER:find-my-service"; }
+    static get style() { return ""; }
 }
 
 export { FindMyService as find_my_service };
