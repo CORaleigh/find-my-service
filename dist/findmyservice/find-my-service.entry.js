@@ -280,21 +280,13 @@ class FindMyService {
         this.features = [];
     }
     initializeMap() {
-        loadModules(['esri/portal/Portal', 'esri/widgets/Search', 'esri/WebMap', 'esri/layers/FeatureLayer']).then(([Portal, Search, WebMap, FeatureLayer]) => {
+        loadModules(['esri/portal/Portal', 'esri/widgets/Search', 'esri/WebMap', 'esri/layers/FeatureLayer', 'esri/tasks/Locator']).then(([Portal, Search, WebMap, FeatureLayer, Locator]) => {
             this.search = new Search({
                 container: 'searchDiv', includeDefaultSources: false,
                 sources: [
                     {
-                        layer: new FeatureLayer({ url: "https://maps.raleighnc.gov/arcgis/rest/services/Addresses/MapServer/2" }),
-                        displayField: "ADDRESS",
-                        name: "Search by address",
-                        placeholder: "Search by address",
-                        filter: { where: "FEATURETYPE <> 'Subaddress'" },
-                        outFields: ['ADDRESS'],
-                        maxResults: 1,
-                        maxSuggestions: 6,
-                        suggestionsEnabled: true,
-                        minSuggestCharacters: 0
+                        locator: new Locator({ url: "https://mapstest.raleighnc.gov/arcgis/rest/services/Locators/FindMyService1/GeocodeServer" }),
+                        placeholder: "Search by address"
                     }
                 ]
             });
