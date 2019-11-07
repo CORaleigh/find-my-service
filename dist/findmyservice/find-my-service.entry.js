@@ -418,11 +418,9 @@ class FindMyService {
         document.getElementById('councilDiv').innerHTML = '';
     }
     render() {
-        return (h("div", null, h("div", { id: 'searchDiv' }), h("div", { class: "o-layout-sidebar-after o-layout-sidebar-after--tight" }, this.councilInfo.map((info) => {
-            return this.council ?
-                h("div", { id: "councilDiv", class: "o-layout-sidebar-after__secondary" }, this.loadFeatureWidget("councilDiv", info))
-                : h("div", null);
-        }), h("ol", { class: "o-layout-grid o-layout-grid--4 o-layout-sidebar-after__primary" }, this.maps.map((webmap) => {
+        return this.council ? (h("div", null, h("div", { id: 'searchDiv' }), h("div", { class: "o-layout-sidebar-after o-layout-sidebar-after--tight" }, this.councilInfo.map((info) => {
+            return h("div", { id: "councilDiv", class: "o-layout-sidebar-after__secondary" }, this.loadFeatureWidget("councilDiv", info));
+        }), h("ol", { class: "o-layout-grid o-layout-grid--3 o-layout-sidebar-after__primary" }, this.maps.map((webmap) => {
             return webmap.featureCnt > 0 ? h("li", { class: "o-layout-grid__item" }, h("div", null, h("h3", null, webmap.title), webmap.layers.map((layer) => {
                 return layer.features.length > 0 ? h("div", null, layer.features.map((feature, i) => {
                     return this.council && layer.title.includes('City Council') ?
@@ -433,7 +431,16 @@ class FindMyService {
                     : h("div", null);
             })))
                 : h("div", null);
-        })))));
+        }))))) :
+            (h("div", null, h("div", { id: 'searchDiv' }), h("div", null, h("ol", { class: "o-layout-grid o-layout-grid--3" }, this.maps.map((webmap) => {
+                return webmap.featureCnt > 0 ? h("li", { class: "o-layout-grid__item" }, h("div", null, h("h3", null, webmap.title), webmap.layers.map((layer) => {
+                    return layer.features.length > 0 ? h("div", null, layer.features.map((feature, i) => {
+                        return h("div", { id: layer.id + '_' + i }, this.loadFeatureWidget(layer.id + '_' + i, feature), h("br", null));
+                    }))
+                        : h("div", null);
+                })))
+                    : h("div", null);
+            })))));
     }
     static get style() { return ""; }
 }

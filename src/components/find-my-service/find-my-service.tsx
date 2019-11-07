@@ -164,32 +164,47 @@ export class FindMyService {
      document.getElementById('councilDiv').innerHTML = '';   
     }
     render() {
-        return (<div><div id='searchDiv'></div>
-            <div class="o-layout-sidebar-after o-layout-sidebar-after--tight">
-            {this.councilInfo.map((info) => {
-                  return this.council ? 
-                  <div id="councilDiv" class="o-layout-sidebar-after__secondary">
+        return this.council ? (<div><div id='searchDiv'></div>
+        <div class="o-layout-sidebar-after o-layout-sidebar-after--tight">
+        {this.councilInfo.map((info) => {
+              return <div id="councilDiv" class="o-layout-sidebar-after__secondary">
 
-                 {this.loadFeatureWidget("councilDiv", info)}
-                </div>
-                :<div></div>
-            })}
-
-            
-            <ol class="o-layout-grid o-layout-grid--4 o-layout-sidebar-after__primary">{this.maps.map((webmap) => {
-            return webmap.featureCnt > 0 ? <li class="o-layout-grid__item"><div><h3>{webmap.title}</h3>
-                {webmap.layers.map((layer) => {
-                    return layer.features.length > 0 ? <div>
-                        {layer.features.map((feature, i) => {
+             {this.loadFeatureWidget("councilDiv", info)}
+            </div>
+        })}
+        <ol class="o-layout-grid o-layout-grid--3 o-layout-sidebar-after__primary">{this.maps.map((webmap) => {
+        return webmap.featureCnt > 0 ? <li class="o-layout-grid__item"><div><h3>{webmap.title}</h3>
+            {webmap.layers.map((layer) => {
+                return layer.features.length > 0 ? <div>
+                    {layer.features.map((feature, i) => {
                             return this.council && layer.title.includes('City Council') ?
                             <div></div>
                             :
-                            <div id={layer.id + '_' + i}>{this.loadFeatureWidget(layer.id + '_' + i, feature)}<br /></div>
-                        })}</div>
-                        : <div></div>
-                })}
-                </div></li>
-                : <div></div>
-        })}</ol></div></div>);
+                            <div id={layer.id + '_' + i}>{this.loadFeatureWidget(layer.id + '_' + i, feature)}<br /></div>})}</div>
+                    : <div></div>
+            })}
+            </div></li>
+            : <div></div>
+    })}</ol></div></div>) :
+
+        (<div><div id='searchDiv'></div>
+        <div>
+        
+        <ol class="o-layout-grid o-layout-grid--3">{this.maps.map((webmap) => {
+        return webmap.featureCnt > 0 ? <li class="o-layout-grid__item"><div><h3>{webmap.title}</h3>
+            {webmap.layers.map((layer) => {
+                return layer.features.length > 0 ? <div>
+                    {layer.features.map((feature, i) => {
+                        return <div id={layer.id + '_' + i}>{this.loadFeatureWidget(layer.id + '_' + i, feature)}<br /></div>
+                    })}</div>
+                    : <div></div>
+            })}
+            </div></li>
+            : <div></div>
+    })}</ol></div></div>)
+
+
+
+       
     }
 }
