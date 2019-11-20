@@ -54,9 +54,8 @@ export class FindMyService {
                                         if (this.council && layer.title.includes('City Council') && featureSet.features.length > 0) {
                                             console.log(featureSet.features[0]);
                                             featureSet.features[0].useDefaultPopupTemplate = false;
-                                            featureSet.features[0].layer.popupTemplate.content[0].text = '<div style="padding:30px"><img alt="" src="https://www.raleighnc.gov/content/PubAffairs/Images/Council/District{COUNCIL_DIST}.jpg" style="padding-right:1em;max-height:200px;"/>'
-                                            ;
-                                            featureSet.features[0].layer.popupTemplate.content[0].text += "<h5>{COUNCIL_PERSON}</h5><span>Raleigh City Council</span><div>District {COUNCIL_DIST}</div><div><a href='https://www.raleighnc.gov/government/content/PubAffairs/Contacts/Council/District{COUNCIL_DIST}.html'><span>Website </span></a></div></div>";
+                                            featureSet.features[0].layer.popupTemplate.content[0].text = '<div style="padding:30px"><img alt="" src="{expression/expr0}" style="padding-right:1em;max-height:200px;"/>';
+                                            featureSet.features[0].layer.popupTemplate.content[0].text += "<h5>{COUNCIL_PERSON}</h5><span>Raleigh City Council</span><div>District {COUNCIL_DIST}</div><div><a href='https://www.raleighnc.gov/services/government/city-council-and-committees'><span>Website </span></a></div></div>";
                                             featureSet.features[0].layer.popupTemplate.title = "";
                                             this.councilInfo.push(featureSet.features[0]);
 
